@@ -17,6 +17,8 @@ class HandleEventResponses:
                 "payload": d,  # full raw payload
             },
 
+            Events.SESSIONS_REPLACE: lambda d: {},
+
             # Guild
             Events.GUILD_CREATE: lambda d: {
                 "guild_id": d.get("id"),
