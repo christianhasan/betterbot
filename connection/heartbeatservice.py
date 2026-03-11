@@ -1,5 +1,5 @@
 import logging
-from ..event_related.commands import Commands
+from ..command_related.commands import Commands
 import asyncio
 
 class HeartbeatService:
@@ -13,10 +13,13 @@ class HeartbeatService:
         self.payload = {"op": 1, "d": session.sequence}
 
     async def _start_heartbeat_watchdog(self):
-        self.logger.debug("Started heartbeat watchdog.")
-        await asyncio.sleep(self.session.heartbeat_interval * 1.5)
-        self.logger.warning("I AM BARKING I AM BARKING! DOG ALERT. Watchdog triggered. Discord didn't respond with Heartbeat ACK.")
-        await self.emit(Commands.CLIENT_RESET_NEEDED, fire_and_forget=True) # Fire amd forget needed for safety
+        try:
+            self.logger.debug("Started heartbeat watchdog.")
+            await asyncio.sleep(self.session.heartbeat_interval * 1.5)
+            self.logger.warning("I AM BARKING I AM BARKING! DOG ALERT. Watchdog triggered. Discord didn't respond with Heartbeat ACK.")
+            await self.emit(Commands.CLIENT_RESET_NEEDED, fire_and_forget=True) # Fire amd forget needed for safety
+        
+        except asyncio.CancelledError: pass
 
     async def _loop_send_heartbeat(self):
         self.logger.debug(f"Heartbeat loop started with heartbeat interval of {self.session.heartbeat_interval}")

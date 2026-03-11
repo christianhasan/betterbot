@@ -1,4 +1,4 @@
-from ..event_related.commands import Commands
+from ..command_related.commands import Commands
 import logging
 
 class Identify:

@@ -10,7 +10,7 @@ class HandleEventResponses:
         self.dispatch_map = {
             # Lifecycle
             Events.BOT_READY: lambda d: {
-                "bot_id": d["user"].get("id"),
+                "user_id": d["user"].get("id"),
                 "username": d["user"].get("username"),
                 "guilds": d.get("guilds"),
                 "session_id": d.get("session_id"),
@@ -192,4 +192,4 @@ class HandleEventResponses:
             payload = self.dispatch_map[response_event](response_data)
             await self.emit(response_event, **payload)
         else:
-            self.logger.debug("Debug: Event sent by discord is undefined")
+            self.logger.warning(f"Event sent by discord is undefined {response_event}")

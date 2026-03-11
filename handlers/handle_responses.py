@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from ..event_related.commands import Commands
+from ..command_related.commands import Commands
 
 class HandleResponses:
     def __init__(self, commandbus, session):
@@ -9,22 +9,26 @@ class HandleResponses:
         self.logger = logging.getLogger(__name__)
         self.listener = None
 
-    async def _listener(self, ws):
-        self.logger.debug("Listener started")
-        while True:
-            message = await ws.receive_message()
-            if not message:
-                continue
-            asyncio.create_task(self.handle_responses(message))
-            self.logger.debug(f"Received a message and sent it. MESSAGE:\n{message}")
+    async def _listener(self):
+        try:
+            self.logger.debug("Listener started")
+            while True:
+                message = await self.emit(Commands.RECEIVE_WEBSOCKET_MESSAGE)
+                if not message:
+                    continue
+                asyncio.create_task(self.handle_responses(message))
+                self.logger.debug(f"Received a message and sent it to handle_responses.")
+                
+        except asyncio.CancelledError:
+            self.logger.debug("Listener Cancelled.")
 
     async def stop_listener(self):
         if isinstance(self.listener, asyncio.Task) and not self.listener.done():
             self.listener.cancel()
 
-    async def start_listener(self, ws):
+    async def start_listener(self):
         await self.stop_listener()
-        self.listener = asyncio.create_task(self._listener(ws))
+        self.listener = asyncio.create_task(self._listener())
 
     async def handle_responses(self, message):
         response_json = message

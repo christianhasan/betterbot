@@ -30,20 +30,14 @@ class EventBus:
     async def emit(self, event_type, **kwargs):
         self.logger.debug(f"Emitting {event_type} with {kwargs}")
         handlers = self.registry.get(event_type, [])
+        self.logger.debug(f"Handlers registered for {event_type} is {handlers} and they are now gonna be executed.")
 
         for handler in self.registry.get(Events.EVERYTHING, []):
             self.logger.debug(f"Everything handler exists.")
-            if not handlers:
-                task = asyncio.create_task(handler(event_type))
-                self.tasks.add(task)
-                task.add_done_callback(self.tasks.discard)
-                self.logger.debug(f"Notified everything handler for {event_type}")
-            else:
-                for listener in handlers:
-                    task = asyncio.create_task(handler(event_type, listener))
-                    self.tasks.add(task)
-                    task.add_done_callback(self.tasks.discard)
-                    self.logger.debug(f"Notified {listener} for {event_type}")
+            task = asyncio.create_task(handler(event_type))
+            self.tasks.add(task)
+            task.add_done_callback(self.tasks.discard)
+            self.logger.debug(f"Notified everything handler for {event_type}")
 
         for handler in handlers:
             allowed_params = inspect.signature(handler).parameters.keys()
@@ -69,5 +63,3 @@ class EventBus:
         await event.wait()
 
         self.waiters[event_type].remove(event)
-
-
