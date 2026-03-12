@@ -1,13 +1,15 @@
-from .handlers.websocket_handler import WebsocketHandler
-from .command_related.commandbus import Commandbus
-from . import error
-from .command_related.commands import Commands
-from .connection.identify import Identify
-from .connection.heartbeatservice import HeartbeatService
-from .connection.session import Session
-from .event_related.eventbus import EventBus
-from .handlers.handle_responses import HandleResponses
-from .handlers.handle_event_responses import HandleEventResponses
+from .gateway_client.handlers.websocket_handler import WebsocketHandler
+from .gateway_client.command_related.commandbus import Commandbus
+from .gateway_client import error
+from .gateway_client.command_related.commands import Commands
+from .gateway_client.connection.identify import Identify
+from .gateway_client.connection.heartbeatservice import HeartbeatService
+from .gateway_client.connection.session import Session
+from .gateway_client.event_related.eventbus import EventBus
+from .gateway_client.handlers.handle_responses import HandleResponses
+from .gateway_client.event_related.handle_event_responses import HandleEventResponses
+from .rest_client.restclient import RESTClient
+
 import asyncio
 import logging
 
@@ -16,15 +18,20 @@ class Setup:
         if token is None:
             raise error.InvalidTokenError("You must provide your discord token.")
         
+        self.debug = False
         self.token = token
         self.event = EventBus()
+        self.rest_client = RESTClient(token)
+
         self.stop = asyncio.Event()
 
     def _start_logging(self):
         logging.basicConfig(
-            level=logging.DEBUG,
-            filename="log.txt",
-            filemode="w",
+            level=logging.DEBUG if self.debug else logging.INFO,
+            handlers=[
+                logging.FileHandler("log.txt", mode="w"),
+                logging.StreamHandler()
+            ],
         )
 
     async def start(self):
@@ -39,6 +46,10 @@ class Setup:
         identify = Identify(commandbus, session)
         heartbeat_service = HeartbeatService(commandbus, session)
         handle_responses = HandleResponses(commandbus, session)
+
+
+        if self.debug is True:
+            return commandbus, session, identify, heartbeat_service, handle_responses, websocket_handler, self.event
 
         await commandbus.register(Commands.IDENTIFY_NEEDED, identify.identify)
 
@@ -58,5 +69,4 @@ class Setup:
         await commandbus.register(Commands.HANDLE_EVENT, handle_events.handle_events)
 
         await websocket_handler.reset()
-
         await self.stop.wait()

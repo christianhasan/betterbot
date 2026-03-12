@@ -1,2 +1,2 @@
 from .setup import Setup
-from .event_related.events import Events
+from .gateway_client.event_related.events import Events
