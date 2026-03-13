@@ -1,29 +1,8 @@
-# Betterbot
-
-A modern, event-driven bot framework for Python, designed for simplicity and flexibility.
-
-## Install
-Install via pip:
-
-```bash
-pip install betterbot
-```
-
-## How to Use
-Import the `Setup` module and initialize your bot:
-
-```python
-from betterbot import Setup
-```
-
-### Example Bot Script
-
-```python
 import asyncio
 import json
-from betterbot import Setup, Events, InteractionTypes
+from betterbot import Setup, Events, InteractionTypes, Types
 
-# Load bot token from configuration
+# Load bot token
 with open("config.json") as f:
     config = json.load(f)
 
@@ -32,19 +11,18 @@ TOKEN = config["TOKEN"]
 class Bot:
     def __init__(self):
         self.bot = Setup(TOKEN, intents=53608447)
-        self.bot.debug = True  # Enable detailed debug logs
+        self.bot.debug = True # Debug mode for enabling comprehensive logs. You must have a instance of Setup first. 
         self.rest = self.bot.rest_client
         self.bot_username = None
         self.event = self.bot.event
 
     async def main(self):
-        # Register event handlers
-        await self.event.register(Events.BOT_READY, self.on_ready) # You can register multiple handlers per event.
+        await self.event.register(Events.BOT_READY, self.on_ready) # You can add multiple events
         await self.event.register(Events.MESSAGE_CREATE, self.on_message)
         await self.bot.start()
 
     # -----------------------
-    # Event Handlers
+    # Events
     # -----------------------
     async def on_ready(self, username, application_id):
         self.bot_username = username
@@ -67,36 +45,40 @@ class Bot:
             await self.test_rest_methods()
 
     # -----------------------
-    # Slash Command Handler
+    # Slash command handler
     # -----------------------
     async def test_command(self, interaction_id, token):
-        # Immediately respond to the interaction
-        await self.rest.send_interaction_callback(
+        # Defer the interaction immediately
+        id = await self.rest.send_interaction_callback(
             interaction_id,
             token,
             cmd_type=InteractionTypes.RESPOND_WITH_MESSAGE,
-            content="Hello, it is starting!"
+            content="Hello it is starting!"
         )
         await self.test_rest_methods()
 
+
     async def test_rest_methods(self):
-        # -----------------------
-        # Channel Methods
-        # -----------------------
-        await self.rest.send_message(CHANNEL_ID, "Hello from Betterbot REST test!")
+        # Some channel methods
+        # -------------------
+
+        await self.rest.send_message(CHANNEL_ID, "Hello from betterbot REST test!")
 
         messages = await self.rest.get_messages(CHANNEL_ID)
-        if messages:
-            msg_id = messages[0]["id"]
-            await self.rest.typing(CHANNEL_ID)
-            await self.rest.add_reaction(CHANNEL_ID, msg_id, "👍")
-            await self.rest.remove_reaction(CHANNEL_ID, msg_id, "👍")
-            await self.rest.pin_message(CHANNEL_ID, msg_id)
-            await self.rest.unpin_message(CHANNEL_ID, msg_id)
+        for i in range(1):
+            id = messages[0]["id"]
 
-        # -----------------------
-        # Guild Methods
-        # -----------------------
+        await self.rest.typing(CHANNEL_ID)
+        await self.rest.add_reaction(CHANNEL_ID, id, "👍")
+        await self.rest.remove_reaction(CHANNEL_ID, id, "👍")
+        await self.rest.pin_message(CHANNEL_ID, id)
+        await self.rest.unpin_message(CHANNEL_ID, id)
+        messages = await self.rest.get_messages(CHANNEL_ID, limit=5)
+
+        # -------------------
+        # Guild methods
+        # -------------------
+
         guild_info = await self.rest.get_guild_info(GUILD_ID)
         members = await self.rest.get_guild_members(GUILD_ID, limit=5)
         roles = await self.rest.get_guild_roles(GUILD_ID)
@@ -104,7 +86,6 @@ class Bot:
         print("REST test complete!")
 
 # -----------------------
-# Run Bot
+# Run bot
 # -----------------------
 asyncio.run(Bot().main())
-```
