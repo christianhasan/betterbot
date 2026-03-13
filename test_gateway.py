@@ -7,7 +7,7 @@ from betterbot.gateway_client.command_related.commands import Commands
 class FaultInjection:
     def __init__(self):
         self.logger = logging.getLogger()
-        self.setup = Setup(token="I like stuff")
+        self.setup = Setup(token="I like stuff", intents="I do too")
         self.setup.debug = True
         self.commandbus_flag = False
         self.eventbus_flag = False
