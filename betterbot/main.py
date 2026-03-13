@@ -1,14 +1,14 @@
-from betterbot.gateway_client.handlers.websocket_handler import WebsocketHandler
-from betterbot.gateway_client.command_related.commandbus import Commandbus
-from betterbot.gateway_client import error
-from betterbot.gateway_client.command_related.commands import Commands
-from betterbot.gateway_client.connection.identify import Identify
-from betterbot.gateway_client.connection.heartbeatservice import HeartbeatService
-from betterbot.gateway_client.connection.session import Session
-from betterbot.gateway_client.event_related.eventbus import EventBus
-from betterbot.gateway_client.handlers.handle_responses import HandleResponses
-from betterbot.gateway_client.event_related.handle_event_responses import HandleEventResponses
-from betterbot.rest_client.restclient import RESTClient
+from .gateway_client.handlers.websocket_handler import WebsocketHandler
+from .gateway_client.command_related.commandbus import Commandbus
+from .gateway_client import error
+from .gateway_client.command_related.commands import Commands
+from .gateway_client.connection.identify import Identify
+from .gateway_client.connection.heartbeatservice import HeartbeatService
+from .gateway_client.connection.session import Session
+from .gateway_client.event_related.eventbus import EventBus
+from .gateway_client.handlers.handle_responses import HandleResponses
+from .gateway_client.event_related.handle_event_responses import HandleEventResponses
+from .rest_client.restclient import RESTClient
 
 import sys
 import asyncio
