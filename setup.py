@@ -10,27 +10,36 @@ from .gateway_client.handlers.handle_responses import HandleResponses
 from .gateway_client.event_related.handle_event_responses import HandleEventResponses
 from .rest_client.restclient import RESTClient
 
+import sys
 import asyncio
 import logging
 
 class Setup:
-    def __init__(self, token):
+    def __init__(self, token=None, intents=None):
         if token is None:
             raise error.InvalidTokenError("You must provide your discord token.")
         
+        if intents is None:
+            raise error.InvalidIntentsError("You must provide Intents.")
+
         self.debug = False
+        self.debug_test = False
+
         self.token = token
+        self.intents = intents
+
         self.event = EventBus()
-        self.rest_client = RESTClient(token)
+        self.rest_client = RESTClient(token, self.event)
 
         self.stop = asyncio.Event()
 
     def _start_logging(self):
+        sys.stdout.reconfigure(encoding="utf-8")
         logging.basicConfig(
-            level=logging.DEBUG if self.debug else logging.INFO,
+            level=logging.DEBUG if self.debug else logging.WARNING,
             handlers=[
-                logging.FileHandler("log.txt", mode="w"),
-                logging.StreamHandler()
+                logging.FileHandler("log.txt", mode="w", encoding="utf-8"),
+                logging.StreamHandler(sys.stdout)
             ],
         )
 
@@ -39,7 +48,9 @@ class Setup:
 
         commandbus = Commandbus()
         session = Session()
+
         session.token = self.token
+        session.intents = self.intents
 
         websocket_handler = WebsocketHandler(commandbus)
         handle_events = HandleEventResponses(self.event, session)
@@ -48,7 +59,7 @@ class Setup:
         handle_responses = HandleResponses(commandbus, session)
 
 
-        if self.debug is True:
+        if self.debug_test is True:
             return commandbus, session, identify, heartbeat_service, handle_responses, websocket_handler, self.event
 
         await commandbus.register(Commands.IDENTIFY_NEEDED, identify.identify)
