@@ -14,6 +14,10 @@ import sys
 import asyncio
 import logging
 
+class Intents:
+    default = 53575421
+    all = 53608447
+
 class Setup:
     def __init__(self, token: str, intents: str):
         if token is None:
