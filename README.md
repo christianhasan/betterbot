@@ -21,7 +21,7 @@ from betterbot import Setup
 ```python
 import asyncio
 import json
-from betterbot import Setup, Events, InteractionTypes, Types
+from betterbot import Setup, Events, InteractionTypes
 
 # Load bot token from configuration
 with open("config.json") as f:
