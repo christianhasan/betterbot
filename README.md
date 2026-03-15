@@ -46,14 +46,13 @@ class Bot:
     # -----------------------
     # Event Handlers
     # -----------------------
-    async def on_ready(self, username, application_id):
+    async def on_ready(self, username, es):
         self.bot_username = username
         print(f"Logged in as {username}")
 
         # Create a guild slash command
-        await self.rest.create_guild_command(
+        await es.create_guild_command(
             self.test_command,
-            application_id=application_id,
             guild_id=GUILD_ID,
             name="testrest",
             description="Test all REST endpoints with defer"
@@ -69,14 +68,9 @@ class Bot:
     # -----------------------
     # Slash Command Handler
     # -----------------------
-    async def test_command(self, interaction_id, token):
+    async def test_command(self, es): # Es stands for eventsend and is the prefered way to respond to events
         # Immediately respond to the interaction
-        await self.rest.send_interaction_callback(
-            interaction_id,
-            token,
-            cmd_type=InteractionTypes.RESPOND_WITH_MESSAGE,
-            content="Hello, it is starting!"
-        )
+        await es.respond_message(content="Hello, it is starting!")
         await self.test_rest_methods()
 
     async def test_rest_methods(self):
