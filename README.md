@@ -51,6 +51,8 @@ class Bot:
         print(f"Logged in as {username}")
 
         # Create a guild slash command
+
+        # Es stands for Event-Send use it in response to events/command events 
         await es.create_guild_command(
             self.test_command,
             guild_id=GUILD_ID,
