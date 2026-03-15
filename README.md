@@ -70,7 +70,8 @@ class Bot:
     # -----------------------
     # Slash Command Handler
     # -----------------------
-    async def test_command(self, es): # Es is the prefered way to respond to events you can do it manually but that is not recommended
+    async def test_command(self, es):
+        # Es is the prefered way to respond to events you can do it manually but that is not recommended
         # Immediately respond to the interaction
         await es.respond_message(content="Hello, it is starting!")
         await self.test_rest_methods()
