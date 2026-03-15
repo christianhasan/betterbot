@@ -57,20 +57,20 @@ class Bot:
             self.test_command,
             guild_id=GUILD_ID,
             name="testrest",
-            description="Test all REST endpoints with defer"
+            description="some example REST endpoints"
         )
 
     async def on_message(self, username, content, channel_id):
         if username == self.bot_username:
             return
         print(f"{username}: {content}")
-        if content.lower() == "test rest":
+        if content.lower() == "example rest":
             await self.test_rest_methods()
 
     # -----------------------
     # Slash Command Handler
     # -----------------------
-    async def test_command(self, es): # Es stands for eventsend and is the prefered way to respond to events
+    async def test_command(self, es): # Es is the prefered way to respond to events you can do it manually but that is not recommended
         # Immediately respond to the interaction
         await es.respond_message(content="Hello, it is starting!")
         await self.test_rest_methods()
