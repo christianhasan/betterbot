@@ -13,23 +13,25 @@ class Interaction:
     def __init__(self, wrapper):
         self.send = wrapper.request
 
-    async def send_interaction_callback(self, interaction_id, interaction_token, cmd_type, content=None, embed=None, components=None):
+    async def send_interaction_callback(self, interaction_id, interaction_token, cmd_type, content=None, embed=None, components=None, ephemeral=False):
         payload = {}
         data = {}
         payload["type"] = cmd_type
         if content: data["content"] = content
-        if embed: data["embed"] = embed
+        if embed: data["embeds"] = embed
         if components: data["components"] = components
+        if ephemeral: data["flags"] = 64
         if data: payload["data"] = data
         endpoint = Endpoints.INTERACTION_CALLBACK(d={"interaction_id": interaction_id, "interaction_token": interaction_token})
         return await self.send(method="post", endpoint=endpoint, identifier=f"interaction_callback", json=payload)
 
-    async def send_interaction_followup(self, application_id, interaction_token, content=None, embed=None, components=None):
+    async def send_interaction_followup(self, application_id, interaction_token, content=None, embed=None, components=None, ephemeral=False):
         payload = {}
         data = {}
         if content: data["content"] = content
-        if embed: data["embed"] = embed
+        if embed: data["embeds"] = embed
         if components: data["components"] = components
+        if ephemeral: data["flags"] = 64
         if data: payload["data"] = data
         endpoint = Endpoints.INTERACTION_FOLLOWUP(d={"application_id": application_id, "interaction_token": interaction_token})
         return await self.send(method="post", endpoint=endpoint, identifier=f"interaction_followup:{application_id}", json=payload)
@@ -42,7 +44,7 @@ class Interaction:
         payload = {}
         data = {}
         if content: data["content"] = content
-        if embed: data["embed"] = embed
+        if embed: data["embeds"] = embed
         if components: data["components"] = components
         if data: payload["data"] = data
         endpoint = Endpoints.INTERACTION_UPDATE_MESSAGE(d={"application_id": application_id, "interaction_token": interaction_token, "message_id": message_id or "@original"})

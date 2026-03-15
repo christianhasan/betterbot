@@ -8,13 +8,13 @@ class Channel:
         endpoint = Endpoints.CHANNEL_INFO(d={"channel_id": channel_id})
         return await self.send(method="get", endpoint=endpoint, identifier=f"get_channel_info:{channel_id}")
 
-    async def send_message(self, channel_id, content=None, embed=None, file=None):
-        if not content and not embed and not file:
-            raise ValueError("At least one of content, embed, or file must be provided")
+    async def send_message(self, channel_id, content=None, embed=None, components=None):
+        if not content and not embed and not components:
+            raise ValueError("At least one of content, embed, or components must be provided")
         payload = {}
         if content: payload["content"] = content
-        if embed: payload["embed"] = embed
-        if file: payload["file"] = file
+        if embed: payload["embeds"] = embed
+        if components: payload["components"] = components
         endpoint = Endpoints.CHANNEL_MESSAGES(d={"channel_id": channel_id})
         return await self.send(method="post", endpoint=endpoint, identifier=f"send_message:{channel_id}", json=payload)
 
@@ -30,8 +30,9 @@ class Channel:
         endpoint = Endpoints.CHANNEL_MESSAGE(d={"channel_id": channel_id, "message_id": message_id})
         return await self.send(method="delete", endpoint=endpoint, identifier=f"delete_message:{channel_id}")
 
-    async def add_reaction(self, channel_id, message_id, emoji):
-        endpoint = Endpoints.CHANNEL_REACTIONS(d={"channel_id": channel_id, "message_id": message_id, "emoji": emoji})
+    async def add_reaction(self, channel_id, message_id, emoji, user_id=None):
+        if user_id: endpoint = Endpoints.CHANNEL_REACTION_USER(d={"channel_id": channel_id, "message_id": message_id, "emoji": emoji, "user_id": user_id})
+        else: endpoint = Endpoints.CHANNEL_REACTIONS(d={"channel_id": channel_id, "message_id": message_id, "emoji": emoji})
         return await self.send(method="put", endpoint=endpoint, identifier=f"add_reaction:{channel_id}")
 
     async def remove_reaction(self, channel_id, message_id, emoji, user_id=None):

@@ -4,6 +4,7 @@ from .rest_handlers.guild import Guild
 from .rest_handlers.channel import Channel
 from .wrapper import HttpWrapper
 from .rest_handlers.application import Application
+from .eventsend import es
 
 class RESTClient:
     def __init__(self, token, eventbus):
@@ -13,12 +14,13 @@ class RESTClient:
         self.guild = Guild(wrapper)
         self.interaction = Interaction(wrapper)
         self.application = Application(wrapper, eventbus)
-        
+        es.rest_client = self
+                
     # -------------------------
     # CHANNEL METHODS
     # -------------------------
 
-    async def send_message(self, channel_id: str, content: Optional[str] = None, embed: Optional[list] = None) -> Any:
+    async def send_message(self, channel_id: str, content: Optional[str] = None, embed: Optional[list] = None, components: Optional[list] = None) -> Any:
         """
         Send a message to a channel.
         
@@ -26,9 +28,9 @@ class RESTClient:
             channel_id: ID of the channel.
             content: Text content of the message.
             embed: Optional embed dictionary.
-            file: Optional file to send.
+            components: Buttons and such.
         """
-        return await self.channel.send_message(channel_id, content, embed)
+        return await self.channel.send_message(channel_id, content, embed, components)
 
     async def get_messages(self, channel_id: str, limit: int = 100, before_id: Optional[str] = None) -> Any:
         """Retrieve messages from a channel, optionally before a specific message ID."""
@@ -41,9 +43,9 @@ class RESTClient:
         """Delete a specific message in a channel."""
         return await self.channel.delete_message(channel_id, message_id)
 
-    async def add_reaction(self, channel_id: str, message_id: str, emoji: str) -> Any:
+    async def add_reaction(self, channel_id: str, message_id: str, emoji: str, user_id: Optional[str] = None) -> Any:
         """Add a reaction to a message."""
-        return await self.channel.add_reaction(channel_id, message_id, emoji)
+        return await self.channel.add_reaction(channel_id, message_id, emoji, user_id)
 
     async def remove_reaction(self, channel_id: str, message_id: str, emoji: str, user_id: Optional[str] = None) -> Any:
         """Remove a reaction from a message, optionally for a specific user."""
@@ -133,13 +135,13 @@ class RESTClient:
     # INTERACTION METHODS
     # -------------------------
 
-    async def send_interaction_callback(self, interaction_id: str, interaction_token: str, cmd_type: int, content: Optional[str] = None, embed: Optional[list] = None, components: Optional[list] = None) -> Any:
+    async def send_interaction_callback(self, interaction_id: str, interaction_token: str, cmd_type: int, content: Optional[str] = None, embed: Optional[list] = None, components: Optional[list] = None, ephemeral: bool = False) -> Any:
         """Send an interaction callback response."""
-        return await self.interaction.send_interaction_callback(interaction_id, interaction_token, cmd_type, content, embed, components)
+        return await self.interaction.send_interaction_callback(interaction_id, interaction_token, cmd_type, content, embed, components, ephemeral)
 
-    async def send_interaction_followup(self, application_id: str, interaction_token: str, content: Optional[str] = None, embed: Optional[list] = None, components: Optional[list] = None) -> Any:
+    async def send_interaction_followup(self, application_id: str, interaction_token: str, content: Optional[str] = None, embed: Optional[list] = None, components: Optional[list] = None, ephemeral: bool = False) -> Any:
         """Send a follow-up message for an interaction."""
-        return await self.interaction.send_interaction_followup(application_id, interaction_token, content, embed, components)
+        return await self.interaction.send_interaction_followup(application_id, interaction_token, content, embed, components, ephemeral)
 
     async def get_original_interaction_message(self, application_id: str, interaction_token: str) -> Any:
         """Retrieve the original interaction message."""

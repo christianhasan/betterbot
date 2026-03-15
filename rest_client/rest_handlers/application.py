@@ -1,6 +1,6 @@
 from .endpoints import Endpoints
 from ...gateway_client.event_related.events import Events
-from ..error import Types
+from ...enums import ResponseTypes
 
 class Application:
     def __init__(self, wrapper, eventbus):
@@ -21,7 +21,7 @@ class Application:
         endpoint = Endpoints.APPLICATION_GLOBAL_COMMANDS(d={"application_id": application_id})
         response = await self.send(method="post", endpoint=endpoint, identifier=f"create_global_command:{application_id}", json=payload)
         
-        if response != Types.FAILED and response != Types.CONNECTION_FAILED:
+        if response != ResponseTypes.FAILED and response != ResponseTypes.CONNECTION_FAILED:
             event = f"{Events.INTERACTION_CREATE}:{name}"
             await self.register(event, *handlers)
         
@@ -57,7 +57,7 @@ class Application:
         endpoint = Endpoints.APPLICATION_GUILD_COMMANDS(d={"application_id": application_id, "guild_id": guild_id})
         response = await self.send(method="post", endpoint=endpoint, identifier=f"create_guild_command:{application_id}:{guild_id}", json=payload)
 
-        if response != Types.FAILED and response != Types.CONNECTION_FAILED:
+        if response != ResponseTypes.FAILED and response != ResponseTypes.CONNECTION_FAILED:
             event = f"{Events.INTERACTION_CREATE}:{name}:{guild_id}"
             await self.register(event, *handlers)
         

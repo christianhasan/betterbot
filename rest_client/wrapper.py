@@ -4,7 +4,7 @@ import logging
 import time
 from socket import gaierror
 from . import error
-from .error import Types
+from ..enums import ResponseTypes
 
 class HttpWrapper:
     def __init__(self, token):
@@ -60,13 +60,13 @@ class HttpWrapper:
             raise error.InvalidTokenError("Invalid token!")
 
         elif status_code in [200, 201, 202, 203, 204, 304]:
-            return Types.SUCCESS
+            return ResponseTypes.SUCCESS
     
         elif status_code in [403, 404, 400, 405]:
-            return Types.FAILED
+            return ResponseTypes.FAILED
         
         elif status_code in [500, 502, 504]:
-            return Types.RETRY_DELAY
+            return ResponseTypes.RETRY_DELAY
         
         elif status_code == 429:
             info = response.json()
@@ -80,11 +80,11 @@ class HttpWrapper:
                 self.logger.info(f"Discord rate-limiting. Sleeping for: {sleep}")
                 await asyncio.sleep(sleep)
 
-            return Types.RETRY_NOW
+            return ResponseTypes.RETRY_NOW
         
         else:
-            self.logger.critical("Unhandled Status code treating as successful.")
-            return Types.SUCCESS
+            self.logger.critical("Unhandled Status code treating as unsuccessful.")
+            return ResponseTypes.FAILED
 
     async def _handle_bucket(self, identifier, response):
         bucket = response.headers.get("x-ratelimit-bucket", None) 
@@ -137,7 +137,7 @@ class HttpWrapper:
                 await self._handle_bucket(identifier, response)
                 what_to_do = await self._status_codes(response)
 
-                if what_to_do == Types.SUCCESS:
+                if what_to_do == ResponseTypes.SUCCESS:
                     self.logger.info("Successfully completed your request")
                     if "application/json" in content_type and response.json() is not None:
                         response_json = response.json()
@@ -145,22 +145,22 @@ class HttpWrapper:
                         future.set_result(response_json)
                         return response_json
                     else:
-                        future.set_result(Types.SUCCESS)
-                        return Types.SUCCESS
+                        future.set_result(ResponseTypes.SUCCESS)
+                        return ResponseTypes.SUCCESS
                                         
-                elif what_to_do == Types.FAILED:
+                elif what_to_do == ResponseTypes.FAILED:
                     self.logger.warning(f"Your attempt to send a request failed. Code {response.status_code}")
-                    future.set_result(Types.FAILED)
-                    return Types.FAILED
+                    future.set_result(ResponseTypes.FAILED)
+                    return ResponseTypes.FAILED
                 
-                elif what_to_do == Types.RETRY_DELAY:
+                elif what_to_do == ResponseTypes.RETRY_DELAY:
                     await asyncio.sleep(connection*3)
                     connection += 1
                     if connection == 5:
-                        return Types.CONNECTION_FAILED
+                        return ResponseTypes.CONNECTION_FAILED
                     continue
 
-                elif what_to_do == Types.RETRY_NOW:
+                elif what_to_do == ResponseTypes.RETRY_NOW:
                     if is_in_queue is False:
                         bucket = self.identifiers[identifier]
                         bucket_in_buckets = self.buckets[bucket]
@@ -173,7 +173,7 @@ class HttpWrapper:
 
             except (OSError,httpx.ConnectError, gaierror, httpx.ReadTimeout):
                     self.logger.error(f"Your attempt to send a request failed. Is the network or server down?")
-                    future.set_result(Types.CONNECTION_FAILED)
+                    future.set_result(ResponseTypes.CONNECTION_FAILED)
 
     async def request(self, method, endpoint, identifier, json=None):
         future = asyncio.Future()

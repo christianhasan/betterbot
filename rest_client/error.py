@@ -1,8 +1,1 @@
 class InvalidTokenError(Exception): pass
-
-class Types:
-    RETRY_NOW = "RETRY_NOW"
-    RETRY_DELAY = "RETRY_WITH_DELAY"
-    SUCCESS = "SUCCESS"
-    FAILED = "ATTEMPT_FAILED"
-    CONNECTION_FAILED = "FAILED_DUE_TO_CONNECTION_ISSUES"

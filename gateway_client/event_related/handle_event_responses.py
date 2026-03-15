@@ -10,15 +10,13 @@ class HandleEventResponses:
         self.dispatch_map = {
             # Lifecycle
             Events.BOT_READY: lambda d: {
-                "user_id": d["user"].get("id"),
-                "username": d["user"].get("username"),
+                "user_id": d.get("user", {}).get("id"),
+                "username": d.get("user", {}).get("username"),
                 "guilds": d.get("guilds"),
                 "session_id": d.get("session_id"),
                 "application_id": d.get("application", {}).get("id"),
                 "payload": d,  # full raw payload
             },
-
-            Events.SESSIONS_REPLACE: lambda d: {},
 
             # Guild
             Events.GUILD_CREATE: lambda d: {
@@ -40,20 +38,20 @@ class HandleEventResponses:
             # Member
             Events.GUILD_MEMBER_ADD: lambda d: {
                 "guild_id": d.get("guild_id"),
-                "user_id": d["user"]["id"],
-                "username": d["user"]["username"],
+                "user_id": d.get("user", {}).get("id"),
+                "username": d.get("user", {}).get("username"),
                 "payload": d
             },
             Events.GUILD_MEMBER_REMOVE: lambda d: {
                 "guild_id": d.get("guild_id"),
-                "user_id": d["user"]["id"],
-                "username": d["user"]["username"],
+                "user_id": d.get("user", {}).get("id"),
+                "username": d.get("user", {}).get("username"),
                 "payload": d
             },
             Events.GUILD_MEMBER_UPDATE: lambda d: {
                 "guild_id": d.get("guild_id"),
-                "user_id": d["user"]["id"],
-                "username": d["user"]["username"],
+                "user_id": d.get("user", {}).get("id"),
+                "username": d.get("user", {}).get("username"),
                 "payload": d
             },
 
@@ -62,8 +60,8 @@ class HandleEventResponses:
                 "message_id": d.get("id"),
                 "channel_id": d.get("channel_id"),
                 "guild_id": d.get("guild_id"),
-                "user_id": d["author"]["id"],
-                "username": d["author"]["username"],
+                "user_id": d.get("author", {}).get("id"),
+                "username": d.get("author", {}).get("username"),
                 "content": d.get("content"),
                 "embeds": d.get("embeds", []),
                 "payload": d,
@@ -171,16 +169,16 @@ class HandleEventResponses:
             # Interaction
             Events.INTERACTION_CREATE: lambda d: {
                 "interaction_id": d.get("id"),
-                "token": d.get("token"),
+                "interaction_token": d.get("token"),
                 "cmd_type": d.get("type"),
                 "guild_id": d.get("guild_id"),
                 "channel_id": d.get("channel_id"),
-                "user": d.get("member").get("user"),
-                "user_id": d.get("member").get("user").get("id"),
-                "username": d.get("member").get("user").get("username"),
-                "options": d.get("data").get("options"),
+                "user": d.get("member", {}).get("user"),
+                "user_id": d.get("member", {}).get("user", {}).get("id"),
+                "username": d.get("member", {}).get("user", {}).get("username"),
+                "options": d.get("data", {}).get("options"),
                 "values": [value.get("value") for value in d.get("data", {}).get("options", [])],
-                "roles": d.get("member").get("roles", []),
+                "roles": d.get("member", []).get("roles", []),
                 "payload": d,
             },
 

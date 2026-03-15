@@ -21,7 +21,7 @@ from betterbot import Setup
 ```python
 import asyncio
 import json
-from betterbot import Setup, Events, InteractionTypes, Intents
+from betterbot import Setup, Events, InteractionTypes
 
 # Load bot token from configuration
 with open("config.json") as f:
@@ -31,7 +31,7 @@ TOKEN = config["TOKEN"]
 
 class Bot:
     def __init__(self):
-        self.bot = Setup(TOKEN, intents=Intents.all)
+        self.bot = Setup(TOKEN, intents=53608447)
         self.bot.debug = True  # Enable detailed debug logs
         self.rest = self.bot.rest_client
         self.bot_username = None
@@ -108,4 +108,3 @@ class Bot:
 # -----------------------
 asyncio.run(Bot().main())
 ```
-

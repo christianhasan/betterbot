@@ -14,3 +14,10 @@ class CommandTypes:
     MENTIONABLE = 9 # Can be user or role
     NUMBER = 10
     ATTACHMENT = 11
+
+class ResponseTypes:
+    RETRY_NOW = "RETRY_NOW"
+    RETRY_DELAY = "RETRY_WITH_DELAY"
+    SUCCESS = "SUCCESS"
+    FAILED = "ATTEMPT_FAILED"
+    CONNECTION_FAILED = "FAILED_DUE_TO_CONNECTION_ISSUES"

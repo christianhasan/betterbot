@@ -1,5 +1,6 @@
 import asyncio
 from .events import Events
+from ...rest_client.eventsend import es
 import logging
 import inspect
 
@@ -43,6 +44,9 @@ class EventBus:
             allowed_params = inspect.signature(handler).parameters.keys()
             filtered_params = {param_name: value for param_name, value in kwargs.items() if param_name in allowed_params}
             
+            if "es" in allowed_params:
+                filtered_params["es"] = es(**kwargs)
+
             self.logger.debug(f"Notifying {handler} for {event_type}")
 
             task = asyncio.create_task(handler(**filtered_params))
