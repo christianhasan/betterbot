@@ -208,7 +208,7 @@ class HttpWrapper:
             return await send_identifier()
         
         else:
-            self.global_lock.acquire()
+            await self.global_lock.acquire()
             if identifier in self.identifiers:
                 self.global_lock.release()
                 return await send_identifier()
