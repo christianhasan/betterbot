@@ -1,8 +1,8 @@
 import asyncio
 import json
-from betterbot import Setup, Events, InteractionTypes, Types
+from betterbot import Setup, Events, Intents
 
-# Load bot token
+# Load bot token from configuration
 with open("config.json") as f:
     config = json.load(f)
 
@@ -10,28 +10,28 @@ TOKEN = config["TOKEN"]
 
 class Bot:
     def __init__(self):
-        self.bot = Setup(TOKEN, intents=53608447)
-        self.bot.debug = True # Debug mode for enabling comprehensive logs. You must have a instance of Setup first. 
+        self.bot = Setup(TOKEN, intents=Intents.all)
+        self.bot.debug = True  # Enable detailed debug logs
         self.rest = self.bot.rest_client
         self.bot_username = None
         self.event = self.bot.event
 
     async def main(self):
-        await self.event.register(Events.BOT_READY, self.on_ready) # You can add multiple events
+        # Register event handlers
+        await self.event.register(Events.BOT_READY, self.on_ready) # You can register multiple handlers per event.
         await self.event.register(Events.MESSAGE_CREATE, self.on_message)
         await self.bot.start()
 
     # -----------------------
-    # Events
+    # Event Handlers
     # -----------------------
-    async def on_ready(self, username, application_id):
+    async def on_ready(self, username, es):
         self.bot_username = username
         print(f"Logged in as {username}")
 
         # Create a guild slash command
-        await self.rest.create_guild_command(
+        await es.create_guild_command(
             self.test_command,
-            application_id=application_id,
             guild_id=GUILD_ID,
             name="testrest",
             description="Test all REST endpoints with defer"
@@ -45,47 +45,38 @@ class Bot:
             await self.test_rest_methods()
 
     # -----------------------
-    # Slash command handler
+    # Slash Command Handler
     # -----------------------
-    async def test_command(self, interaction_id, token):
-        # Defer the interaction immediately
-        id = await self.rest.send_interaction_callback(
-            interaction_id,
-            token,
-            cmd_type=InteractionTypes.RESPOND_WITH_MESSAGE,
-            content="Hello it is starting!"
-        )
+    async def test_command(self, es): # Es stands for eventsend and is the prefered way to respond to events
+        # Immediately respond to the interaction
+        await es.respond_message(content="Hello, it is starting!")
         await self.test_rest_methods()
 
-
     async def test_rest_methods(self):
-        # Some channel methods
-        # -------------------
-
-        await self.rest.send_message(CHANNEL_ID, "Hello from betterbot REST test!")
+        # -----------------------
+        # Channel Methods
+        # -----------------------
+        await self.rest.send_message(CHANNEL_ID, "Hello from Betterbot REST test!")
 
         messages = await self.rest.get_messages(CHANNEL_ID)
-        for i in range(1):
-            id = messages[0]["id"]
+        if messages:
+            msg_id = messages[0]["id"]
+            await self.rest.typing(CHANNEL_ID)
+            await self.rest.add_reaction(CHANNEL_ID, msg_id, "👍")
+            await self.rest.remove_reaction(CHANNEL_ID, msg_id, "👍")
+            await self.rest.pin_message(CHANNEL_ID, msg_id)
+            await self.rest.unpin_message(CHANNEL_ID, msg_id)
 
-        await self.rest.typing(CHANNEL_ID)
-        await self.rest.add_reaction(CHANNEL_ID, id, "👍")
-        await self.rest.remove_reaction(CHANNEL_ID, id, "👍")
-        await self.rest.pin_message(CHANNEL_ID, id)
-        await self.rest.unpin_message(CHANNEL_ID, id)
-        messages = await self.rest.get_messages(CHANNEL_ID, limit=5)
-
-        # -------------------
-        # Guild methods
-        # -------------------
-
+        # -----------------------
+        # Guild Methods
+        # -----------------------
         guild_info = await self.rest.get_guild_info(GUILD_ID)
         members = await self.rest.get_guild_members(GUILD_ID, limit=5)
         roles = await self.rest.get_guild_roles(GUILD_ID)
 
-        print("REST test complete!")
+        print("REST example complete!")
 
 # -----------------------
-# Run bot
+# Run Bot
 # -----------------------
 asyncio.run(Bot().main())

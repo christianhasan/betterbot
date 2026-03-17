@@ -1,32 +1,37 @@
-from betterbot.rest_client.wrapper import HttpWrapper
-from betterbot.rest_client.error import Types
+from ..rest_client.wrapper import HttpWrapper
 import logging
 import asyncio
-import json
+import sys
 
 class Test:
     def __init__(self):
-        with open("config.json") as f:
-            config = json.load(f)
+        self.tasks = set()
+        
+        token = ""
 
-        logging.basicConfig(level=logging.DEBUG, filename="log.txt", filemode="w")
-        self.logger = logging.getLogger("TEST_SCRIPT")
-        self.wrapper = HttpWrapper(token="")
+        sys.stdout.reconfigure(encoding="utf-8")
+
+        logging.basicConfig(
+            level=logging.DEBUG,
+            handlers=[
+                logging.FileHandler("log.txt", mode="w", encoding="utf-8"),
+                logging.StreamHandler(sys.stdout)
+            ],
+        )
+
+        self.wrapper = HttpWrapper(token=token)
 
     async def debug_wrapper(self):
-        channel_ids = []
-        here = 0
+        channel_ids = [1482287900585496706, 1482287927206740008]
         json = {"content": "I am nice jk."}
         method = "post"
-        for l in range(5):
+        for l in range(100):
             for i in channel_ids:
                 endpoint = f"https://discord.com/api/v9/channels/{i}/messages"
-                response = await self.wrapper.request(method=method, endpoint=endpoint, identifier=f"{method}:{i}", json=json)
-                if response in [Types.CONNECTION_FAILED, Types.FAILED, Types.SUCCESS]:
-                    self.logger.critical(response)
-                    
-                elif here == 35:
-                    break
-            
+                task = asyncio.create_task(self.wrapper.request(method=method, endpoint=endpoint, identifier=f"{method}:{i}", json=json))
+                self.tasks.add(task)
+                task.add_done_callback(self.tasks.discard)
 
+
+        await asyncio.Future()
 asyncio.run(Test().debug_wrapper())
