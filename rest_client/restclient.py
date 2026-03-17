@@ -14,7 +14,6 @@ class RESTClient:
         self.guild = Guild(wrapper)
         self.interaction = Interaction(wrapper)
         self.application = Application(wrapper, eventbus)
-        es.rest_client = self
                 
     # -------------------------
     # CHANNEL METHODS

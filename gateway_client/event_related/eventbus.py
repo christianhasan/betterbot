@@ -5,8 +5,9 @@ import logging
 import inspect
 
 class EventBus:
-    def __init__(self):
+    def __init__(self, rest_client):
         self.logger = logging.getLogger(__name__)
+        self.rest_client = rest_client
         self.registry = {}
         self.waiters = {}
         self.tasks = set() # Required to avoid garbage collection.
@@ -45,7 +46,7 @@ class EventBus:
             filtered_params = {param_name: value for param_name, value in kwargs.items() if param_name in allowed_params}
             
             if "es" in allowed_params:
-                filtered_params["es"] = es(**kwargs)
+                filtered_params["es"] = es(self.rest_client, **kwargs)
 
             self.logger.debug(f"Notifying {handler} for {event_type}")
 

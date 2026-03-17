@@ -205,11 +205,11 @@ class HttpWrapper:
                 return await self._request(method, endpoint, identifier, json)
 
         if identifier in self.identifiers:
-            await send_identifier()
+            return await send_identifier()
+        
         else:
             async with self.global_lock:
                 if identifier in self.identifiers:
-                    await send_identifier()
-                    return
+                    return await send_identifier()
                 
                 return await self._request(method, endpoint, identifier, json)

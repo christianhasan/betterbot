@@ -15,7 +15,7 @@ import asyncio
 import logging
 
 class Setup:
-    def __init__(self, token: str, intents: str):
+    def __init__(self, token: str, intents: int):
         if token is None:
             raise error.InvalidTokenError("You must provide your discord token.")
         
@@ -28,8 +28,8 @@ class Setup:
         self.token = token
         self.intents = intents
 
-        self.event = EventBus()
         self.rest_client = RESTClient(token, self.event)
+        self.event = EventBus(self.rest_client)
 
         self.stop = asyncio.Event()
 
