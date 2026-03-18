@@ -5,7 +5,7 @@ class Channel:
         self.send = wrapper.request
 
     async def get_channel_info(self, channel_id):
-        endpoint = Endpoints.CHANNEL_INFO(d={"channel_id": channel_id})
+        endpoint = Endpoints.CHANNEL(d={"channel_id": channel_id})
         return await self.send(method="get", endpoint=endpoint, identifier=f"get_channel_info:{channel_id}")
 
     async def send_message(self, channel_id, content=None, embed=None, components=None):
@@ -60,3 +60,7 @@ class Channel:
     async def typing(self, channel_id):
         endpoint = Endpoints.CHANNEL_TYPING(d={"channel_id": channel_id})
         return await self.send(method="post", endpoint=endpoint, identifier=f"typing:{channel_id}")
+    
+    async def delete_channel(self, channel_id):
+        endpoint = Endpoints.CHANNEL(d={"channel_id": channel_id})
+        return await self.send(method="delete", endpoint=endpoint, identifier=f"delete:{channel_id}")
