@@ -7,7 +7,7 @@ from .rest_handlers.application import Application
 from .eventsend import es
 
 class RESTClient:
-    def __init__(self, token, eventbus):
+    def __init__(self, token):
         wrapper = HttpWrapper(token)
 
         self.channel = Channel(wrapper)
