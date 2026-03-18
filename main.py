@@ -28,7 +28,7 @@ class Setup:
         self.token = token
         self.intents = intents
 
-        self.rest_client = RESTClient(token, self.event)
+        self.rest_client = RESTClient(token)
         self.event = EventBus(self.rest_client)
 
         self.stop = asyncio.Event()
