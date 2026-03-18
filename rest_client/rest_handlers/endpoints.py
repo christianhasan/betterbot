@@ -15,7 +15,7 @@ class Endpoints:
     APPLICATION_COMMAND_PERMISSIONS = lambda d: f"{Endpoints.BASE_URL}applications/{d['application_id']}/guilds/{d['guild_id']}/commands/{d['command_id']}/permissions"
 
     # Channels
-    CHANNEL_INFO = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}"
+    CHANNEL = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}"
     CHANNEL_MESSAGES = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}/messages"
     CHANNEL_MESSAGE = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}/messages/{d['message_id']}"
     CHANNEL_REACTIONS = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}/messages/{d['message_id']}/reactions/{d['emoji']}/@me"
