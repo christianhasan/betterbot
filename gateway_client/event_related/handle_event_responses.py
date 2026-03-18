@@ -126,10 +126,10 @@ class HandleEventResponses:
             Events.CONVERSATION_SUMMARY_UPDATE: lambda d: {
                 "channel_id": d.get("id"),
                 "guild_id": d.get("guild_id"),
-                "text": d.get("summary", []).get("text"),
-                "last_message_id": d.get("summary", []).get("last_message_id"),
-                "message_count": d.get("summary", []).get("message_count"),
-                "updated_at": d.get("summary", []).get("updated_at"),
+                "text": d.get("summary", {}).get("text"),
+                "last_message_id": d.get("summary", {}).get("last_message_id"),
+                "message_count": d.get("summary", {}).get("message_count"),
+                "updated_at": d.get("summary", {}).get("updated_at"),
                 "payload": d
             },
 
@@ -178,7 +178,7 @@ class HandleEventResponses:
                 "username": d.get("member", {}).get("user", {}).get("username"),
                 "options": d.get("data", {}).get("options"),
                 "values": [value.get("value") for value in d.get("data", {}).get("options", [])],
-                "roles": d.get("member", []).get("roles", []),
+                "roles": d.get("member", {}).get("roles", []),
                 "payload": d,
             },
 
