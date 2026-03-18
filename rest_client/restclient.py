@@ -31,6 +31,10 @@ class RESTClient:
         """
         return await self.channel.send_message(channel_id, content, embed, components)
 
+    async def delete_channel(self, channel_id: str):
+        """Delete a channel"""
+        return await self.channel.delete_channel(channel_id)
+    
     async def get_messages(self, channel_id: str, limit: int = 100, before_id: Optional[str] = None) -> Any:
         """Retrieve messages from a channel, optionally before a specific message ID."""
         return await self.channel.get_messages(channel_id, limit, before_id)
