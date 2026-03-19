@@ -8,8 +8,8 @@ class Guild:
         endpoint = Endpoints.GUILD_INFO(d={"guild_id": guild_id})
         return await self.send(method="get", endpoint=endpoint, identifier=f"guild_info:{guild_id}")
 
-    async def get_guild_members(self, guild_id, limit=100, after=None):
-        endpoint = Endpoints.GUILD_MEMBERS_LIST(d={"guild_id": guild_id}) + (f"?limit={limit}" + (f"&after={after}" if after else ""))
+    async def get_guild_members(self, guild_id, limit=1000, after=None):
+        endpoint = Endpoints.GUILD_MEMBERS_LIST(d={"guild_id": guild_id}) + (f"?limit={limit}" if after is None else f"limit={limit}&after={after}")
         return await self.send(method="get", endpoint=endpoint, identifier=f"guild_members:{guild_id}")
 
     async def get_guild_member(self, guild_id, user_id):
@@ -40,11 +40,15 @@ class Guild:
 
     async def get_guild_bans(self, guild_id):
         endpoint = Endpoints.GUILD_BANS_LIST(d={"guild_id": guild_id})
-        return await self.send(method="get", endpoint=endpoint, identifier=f"guild_bans:{guild_id}")
+        return await self.send(method="get", endpoint=endpoint, identifier=f"get:bans:{guild_id}")
 
     async def get_guild_ban(self, guild_id, user_id):
-        endpoint = Endpoints.GUILD_BAN_INFO(d={"guild_id": guild_id, "user_id": user_id})
-        return await self.send(method="get", endpoint=endpoint, identifier=f"guild_ban:{guild_id}")
+        endpoint = Endpoints.GUILD_BAN(d={"guild_id": guild_id, "user_id": user_id})
+        return await self.send(method="get", endpoint=endpoint, identifier=f"get:ban:{guild_id}")
+
+    async def ban(self, guild_id, user_id):
+        endpoint = Endpoints.GUILD_BAN(d={"guild_id": guild_id, "user_id": user_id})
+        return await self.send(method="put", endpoint=endpoint, identifier=f"put:ban:{guild_id}")
 
     async def prune_guild_members(self, guild_id, days=None, compute_prune_count=False):
         payload = {}
