@@ -1,5 +1,5 @@
 class Endpoints:
-    BASE_URL = "https://discord.com/api/v9/"
+    BASE_URL = "https://discord.com/api/v10/"
 
     # Interactions / Slash Commands
     INTERACTION_CALLBACK = lambda d: f"{Endpoints.BASE_URL}interactions/{d['interaction_id']}/{d['interaction_token']}/callback"
