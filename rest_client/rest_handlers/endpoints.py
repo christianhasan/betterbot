@@ -1,5 +1,5 @@
 class Endpoints:
-    BASE_URL = "https://discord.com/api/v10/"
+    BASE_URL = "https://discord.com/api/v9/"
 
     # Interactions / Slash Commands
     INTERACTION_CALLBACK = lambda d: f"{Endpoints.BASE_URL}interactions/{d['interaction_id']}/{d['interaction_token']}/callback"
@@ -40,7 +40,7 @@ class Endpoints:
     MEMBER_ROLE_ASSIGN = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/members/{d['user_id']}/roles/{d['role_id']}"
     MEMBER_ROLE_ASSIGN_JSON = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/members/{d['user_id']}"
     GUILD_BANS_LIST = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/bans"
-    GUILD_BAN_INFO = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/bans/{d['user_id']}"
+    GUILD_BAN = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/bans/{d['user_id']}"
     GUILD_PRUNE_MEMBERS = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/prune"
     GUILD_CHANNELS_LIST = lambda d: f"{Endpoints.BASE_URL}guilds/{d['guild_id']}/channels"
 
