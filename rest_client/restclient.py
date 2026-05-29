@@ -1,19 +1,11 @@
 from typing import Any, List, Optional, Callable
-from .rest_handlers.interaction import Interaction
-from .rest_handlers.guild import Guild
-from .rest_handlers.channel import Channel
-from .wrapper import HttpWrapper
-from .rest_handlers.application import Application
-from .eventsend import es
 
 class RESTClient:
-    def __init__(self, token):
-        wrapper = HttpWrapper(token)
-
-        self.channel = Channel(wrapper)
-        self.guild = Guild(wrapper)
-        self.interaction = Interaction(wrapper)
-        self.application = Application(wrapper, eventbus)
+    def __init__(self, channel, guild, interaction, application):
+        self.channel = channel
+        self.guild = guild
+        self.interaction = interaction
+        self.application = application
                 
     # -------------------------
     # CHANNEL METHODS
@@ -35,6 +27,18 @@ class RESTClient:
         """Delete a channel"""
         return await self.channel.delete_channel(channel_id)
     
+    async def create_channel(self, guild_id: str, name: str, channel_type: int, topic: Optional[str] = None, parent_id: Optional[str] = None, voice_user_limit: Optional[int] = None, nsfw: bool = False) -> Any:
+        """Create a channel"""
+        return await self.channel.create_channel(guild_id, name, channel_type, topic, parent_id, voice_user_limit, nsfw)
+
+    async def set_channel_permissions(self, channel_id: str, overwrite_id: str, is_role: Optional[bool] = False, allow: Optional[int] = 0, deny: Optional[int] = 0):
+        """Set the channel permissions.
+        You must either provide an allow or deny byte. Or both. 
+        Providing none of them will not work.
+        You must set is_role to true when modifying role permissions for a channel.
+        """
+        return await self.channel.set_channel_permissions(channel_id, overwrite_id, is_role, allow, deny)
+
     async def get_messages(self, channel_id: str, limit: int = 100, before_id: Optional[str] = None) -> Any:
         """Retrieve messages from a channel, optionally before a specific message ID."""
         return await self.channel.get_messages(channel_id, limit, before_id)

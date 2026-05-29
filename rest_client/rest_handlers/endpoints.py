@@ -16,6 +16,8 @@ class Endpoints:
 
     # Channels
     CHANNEL = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}"
+    CHANNEL_CREATE = lambda d: f"{Endpoints.BASE_URL}guilds/{d["guild_id"]}/channels"
+    CHANNEL_PERMISSIONS = lambda d: f"{Endpoints.BASE_URL}channels/{d["channel_id"]}/permissions/{d["overwrite_id"]}"
     CHANNEL_MESSAGES = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}/messages"
     CHANNEL_MESSAGE = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}/messages/{d['message_id']}"
     CHANNEL_REACTIONS = lambda d: f"{Endpoints.BASE_URL}channels/{d['channel_id']}/messages/{d['message_id']}/reactions/{d['emoji']}/@me"

@@ -5,9 +5,9 @@ import logging
 import inspect
 
 class EventBus:
-    def __init__(self, rest_client):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.rest_client = rest_client
+        self.rest_client = None
         self.registry = {}
         self.waiters = {}
         self.tasks = set() # Required to avoid garbage collection.
@@ -35,7 +35,6 @@ class EventBus:
         self.logger.debug(f"Handlers registered for {event_type} is {handlers} and they are now gonna be executed.")
 
         for handler in self.registry.get(Events.EVERYTHING, []):
-            self.logger.debug(f"Everything handler exists.")
             task = asyncio.create_task(handler(event_type, **kwargs))
             self.tasks.add(task)
             task.add_done_callback(self.tasks.discard)

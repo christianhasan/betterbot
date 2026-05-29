@@ -9,6 +9,11 @@ from .gateway_client.event_related.eventbus import EventBus
 from .gateway_client.handlers.handle_responses import HandleResponses
 from .gateway_client.event_related.handle_event_responses import HandleEventResponses
 from .rest_client.restclient import RESTClient
+from .rest_client.rest_handlers.interaction import Interaction
+from .rest_client.rest_handlers.guild import Guild
+from .rest_client.rest_handlers.channel import Channel
+from .rest_client.wrapper import HttpWrapper
+from .rest_client.rest_handlers.application import Application
 
 import sys
 import asyncio
@@ -16,20 +21,30 @@ import logging
 
 class Setup:
     def __init__(self, token: str, intents: int):
-        if token is None:
-            raise error.InvalidTokenError("You must provide your discord token.")
+        if token is None or len(token) < 40:
+            raise error.InvalidTokenError("You must provide a valid discord token.")
         
         if intents is None:
-            raise error.InvalidIntentsError("You must provide Intents.")
+            raise error.InvalidIntentsError("You must provide Discord Intents.")
 
         self.debug_logs = False
         self.test_mode = False
 
         self.token = token
         self.intents = intents
+        
+        wrapper = HttpWrapper(self.token)
 
-        self.rest_client = RESTClient(token)
-        self.event = EventBus(self.rest_client)
+        self.event = EventBus()
+
+        channel = Channel(wrapper)
+        guild = Guild(wrapper)
+        interaction = Interaction(wrapper)
+        application = Application(wrapper, self.event)
+
+        self.rest_client = RESTClient(channel, guild, interaction, application)
+
+        self.event.rest_client = self.rest_client
 
         self.stop = asyncio.Event()
 
@@ -57,7 +72,6 @@ class Setup:
         identify = Identify(commandbus, session)
         heartbeat_service = HeartbeatService(commandbus, session)
         handle_responses = HandleResponses(commandbus, session)
-
 
         if self.test_mode is True:
             return commandbus, session, identify, heartbeat_service, handle_responses, websocket_handler, self.event

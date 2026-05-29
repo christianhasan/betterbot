@@ -165,7 +165,8 @@ class HttpWrapper:
                         return ResponseTypes.SUCCESS
                                         
                 elif what_to_do == ResponseTypes.FAILED:
-                    self.logger.warning(f"Your attempt to send a request failed. Code {response.status_code}")
+                    response_json = response.json()
+                    self.logger.warning(f"Your attempt to send a request failed. Code {response.status_code}. Json response: {response_json}")
                     return ResponseTypes.FAILED
                 
                 elif what_to_do == ResponseTypes.RETRY_DELAY:
@@ -183,7 +184,7 @@ class HttpWrapper:
                     return ResponseTypes.CONNECTION_FAILED
 
     async def request(self, method, endpoint, identifier, json=None):    
-        async def send_identifier():
+        async def send_with_identifier():
             bucket = self.identifiers[identifier]
             bucket_in_buckets = self.buckets[bucket]
             lock = bucket_in_buckets["lock"]
@@ -205,13 +206,13 @@ class HttpWrapper:
                 return await self._request(method, endpoint, identifier, json)
 
         if identifier in self.identifiers:
-            return await send_identifier()
+            return await send_with_identifier()
         
         else:
             await self.global_lock.acquire()
             if identifier in self.identifiers:
                 self.global_lock.release()
-                return await send_identifier()
+                return await send_with_identifier()
             
             response = await self._request(method, endpoint, identifier, json)
             self.global_lock.release()
