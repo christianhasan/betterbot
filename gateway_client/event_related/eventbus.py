@@ -13,11 +13,13 @@ class EventBus:
         self.tasks = set() # Required to avoid garbage collection.
 
     async def register(self, event_type, *handlers):
-        self.logger.debug(f"Registering {event_type} for {handlers}")
+        self.logger.info(f"Registering {event_type} for {handlers}")
         if event_type not in self.registry:
             self.registry[event_type] = []
         
-        self.registry[event_type].extend(handlers)
+        for handler in handlers:
+            if handler not in self.registry[event_type]:
+                self.registry[event_type].append(handler)
 
     async def unregister(self, event_type, handler=None):
         if event_type in self.registry:
