@@ -144,9 +144,6 @@ class HttpWrapper:
         connection = 0
         while True:
             try:
-                if json:
-                    self.logger.info(f"A json is sent the json is: {json}")
-
                 await self.global_rate_limit.wait()
 
                 response = await self.http.request(method, endpoint, headers={"Authorization": f"Bot {self.token}"}, json=json)
@@ -158,7 +155,7 @@ class HttpWrapper:
 
                 if what_to_do == ResponseTypes.SUCCESS:
                     self.logger.info("Successfully completed your request")
-                    if "application/json" in content_type and response.json() is not None:
+                    if "application/json" in content_type and response.json():
                         response_json = response.json()
                         return response_json
                     else:
@@ -166,7 +163,7 @@ class HttpWrapper:
                                         
                 elif what_to_do == ResponseTypes.FAILED:
                     response_json = response.json()
-                    self.logger.warning(f"Your attempt to send a request failed. Code {response.status_code}. Json response: {response_json}")
+                    self.logger.critical(f"Your request was deliberately rejected by discord. Code {response.status_code}. Json response: {response_json}")
                     return ResponseTypes.FAILED
                 
                 elif what_to_do == ResponseTypes.RETRY_DELAY:

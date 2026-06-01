@@ -170,6 +170,7 @@ class HandleEventResponses:
             Events.INTERACTION_CREATE: lambda d: {
                 "interaction_id": d.get("id"),
                 "interaction_token": d.get("token"),
+                "command_id": d.get("data", {}).get("id"),
                 "cmd_type": d.get("type"),
                 "guild_id": d.get("guild_id"),
                 "channel_id": d.get("channel_id"),
@@ -177,7 +178,6 @@ class HandleEventResponses:
                 "user_id": d.get("member", {}).get("user", {}).get("id"),
                 "username": d.get("member", {}).get("user", {}).get("username"),
                 "options": d.get("data", {}).get("options"),
-                "values": [value.get("value") for value in d.get("data", {}).get("options", [])],
                 "roles": d.get("member", {}).get("roles", []),
                 "payload": d,
             },
@@ -222,9 +222,9 @@ class HandleEventResponses:
         elif response_event == Events.INTERACTION_CREATE:
             data = response_data["data"]
             if response_data.get("guild_id"):
-                event = f"{Events.INTERACTION_CREATE}:{data["name"]}:{response_data["guild_id"]}"
+                event = f"{Events.INTERACTION_CREATE}:{data['id']}:{response_data['guild_id']}"
             else:
-                event = f"{Events.INTERACTION_CREATE}:{data["name"]}"
+                event = f"{Events.INTERACTION_CREATE}:{data['id']}"
 
             payload = self.dispatch_map[response_event](response_data)
             

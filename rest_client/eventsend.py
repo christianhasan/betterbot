@@ -6,7 +6,7 @@ class es:
         self.rest_client = rest_client
         
         self.application_id = None
-        self.channel = None
+        self.channel_id = None
         self.interaction_id = None
         self.interaction_token = None
 
@@ -37,10 +37,10 @@ class es:
             embed: Optional embed dictionary.
             components: Buttons and such.
         """
-        if self.channel is None:
+        if self.channel_id is None:
             raise RuntimeError("You cannot send a message via Event Send (es) when there isn't an event with channel information.")
         
-        return await self.rest_client.send_message(self.channel, content, embed, components)
+        return await self.rest_client.send_message(self.channel_id, content, embed, components)
     
     async def respond_message(self, content: Optional[str] = None, embed: Optional[list] = None, components: Optional[list] = None, ephemeral: bool = False) -> Any:
         """Send an interaction message response."""

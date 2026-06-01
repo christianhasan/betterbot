@@ -51,7 +51,7 @@ class Setup:
     def _start_logging(self):
         sys.stdout.reconfigure(encoding="utf-8")
         logging.basicConfig(
-            level=logging.DEBUG if self.debug_logs else logging.WARNING,
+            level=logging.DEBUG if self.debug_logs else logging.INFO,
             handlers=[
                 logging.FileHandler("log.txt", mode="w", encoding="utf-8"),
                 logging.StreamHandler(sys.stdout)

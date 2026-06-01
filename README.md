@@ -1,6 +1,6 @@
 # Betterbot
 
-A lightweight, event-driven bot framework for Python, designed for simplicity and flexibility.
+A modern, event-driven bot framework for Python, designed for simplicity and flexibility.
 
 ## Install
 Install via pip:

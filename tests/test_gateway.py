@@ -6,7 +6,7 @@ from ..gateway_client.command_related.commands import Commands
 
 class Test:
     def __init__(self):
-        self.setup = Setup(token="I like stuff", intents="I do too")
+        self.setup = Setup(token="I like stfdfffffffffffffffffffffffffwafffffffffffffuff", intents="I do too")
         self.logger = logging.getLogger(__name__)
         self.setup.debug_logs = True
         self.setup.test_mode = True

@@ -22,7 +22,8 @@ class Application:
         response = await self.send(method="post", endpoint=endpoint, identifier=f"create_global_command:{application_id}", json=payload)
         
         if response != ResponseTypes.FAILED and response != ResponseTypes.CONNECTION_FAILED:
-            event = f"{Events.INTERACTION_CREATE}:{name}"
+            id = response["id"]
+            event = f"{Events.INTERACTION_CREATE}:{id}"
             await self.register(event, *handlers)
         
         return response
@@ -58,7 +59,8 @@ class Application:
         response = await self.send(method="post", endpoint=endpoint, identifier=f"create_guild_command:{application_id}:{guild_id}", json=payload)
 
         if response != ResponseTypes.FAILED and response != ResponseTypes.CONNECTION_FAILED:
-            event = f"{Events.INTERACTION_CREATE}:{name}:{guild_id}"
+            id = response["id"]
+            event = f"{Events.INTERACTION_CREATE}:{id}:{guild_id}"
             await self.register(event, *handlers)
         
         return response
